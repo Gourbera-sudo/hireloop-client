@@ -17,18 +17,26 @@ import {
 import { Separator } from "@/components/ui/separator";
 
 import { cn } from "@/lib/utils";
+import { authClient } from "@/lib/auth-client";
 
-const navLinks = [
-  { name: "Browse Jobs", href: "/jobs" },
-  { name: "Company", href: "/companies" },
-  { name: "Pricing", href: "/pricing" },
-];
+
 
 const Navbar = () => {
   const pathname = usePathname();
 
   const isActive = (href: string) =>
     pathname === href || pathname.startsWith(`${href}/`);
+
+  const { data: session } = authClient.useSession();
+  const navLinks = [
+  { name: "Browse Jobs", href: "/jobs" },
+  { name: "Company", href: "/companies" },
+  { name: "Pricing", href: "/pricing" },
+  { name: "Dashboard", href: `/dashboard/${session?.user.role || 'seeker'}` },
+];
+  const handleSignOut = async () => {
+    await authClient.signOut();
+  };
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-white/[0.06] bg-[#15171C]/95 backdrop-blur-xl">
@@ -67,21 +75,37 @@ const Navbar = () => {
             className="h-5 self-center bg-white/15"
           />
 
-          <div className="flex items-center gap-3">
-            <Button
-              variant="ghost"
-              render={<Link href="/login" />}
-              className="text-indigo-400 hover:bg-transparent hover:text-indigo-300"
-            >
-              Sign In
-            </Button>
+          <div className="flex items-center">
+            {session?.user ? (
+              <div className="flex flex-col justify-center">
+                <span className="text-white">Hello, {session.user.name}</span>
 
-            <Button
-              render={<Link href="/register" />}
-              className="rounded-xl bg-indigo-500 px-5 py-2.5 text-white shadow-lg shadow-indigo-500/25 hover:bg-indigo-400"
-            >
-              Get Started
-            </Button>
+                <Button
+                  variant="ghost"
+                  onClick={handleSignOut}
+                  className="text-indigo-400 hover:bg-transparent hover:text-indigo-300"
+                >
+                  Sign Out
+                </Button>
+              </div>
+            ) : (
+              <>
+                <Button
+                  variant="ghost"
+                  render={<Link href="/sign-in" />}
+                  className="text-indigo-400 hover:bg-transparent hover:text-indigo-300"
+                >
+                  Sign In
+                </Button>
+
+                <Button
+                  render={<Link href="/sign-up" />}
+                  className="rounded-xl bg-indigo-500 px-5 py-2.5 text-white shadow-lg shadow-indigo-500/25 hover:bg-indigo-400"
+                >
+                  Get Started
+                </Button>
+              </>
+            )}
           </div>
         </div>
 
@@ -143,7 +167,7 @@ const Navbar = () => {
                     />
                   }
                 >
-                  <Link href="/login">Sign In</Link>
+                  <Link href="/sign-in">Sign In</Link>
                 </SheetClose>
 
                 <SheetClose
@@ -151,7 +175,7 @@ const Navbar = () => {
                     <Button className="mt-3 w-full rounded-xl bg-indigo-500 py-2.5 text-white hover:bg-indigo-400" />
                   }
                 >
-                  <Link href="/register">Get Started</Link>
+                  <Link href="/sign-up">Get Started</Link>
                 </SheetClose>
               </SheetFooter>
             </SheetContent>
