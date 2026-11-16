@@ -33,10 +33,12 @@ const JOB_TYPES: JobType[] = ["Full-time", "Part-time", "Contract", "Internship"
 const CATEGORIES = [
   "Engineering & Tech",
   "Design",
+  "Infrastructure",
   "Product",
   "Marketing",
   "Sales",
   "Finance",
+  "Quality",
   "Customer Support",
   "HR",
 ];
